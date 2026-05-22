@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>商品リサーチ チェックリスト｜中古コース</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f5f3ee;
+    --surface: #fffef9;
+    --surface2: #f0ede4;
+    --accent: #c84b2f;
+    --accent2: #e8874a;
+    --text: #1a1916;
+    --text2: #6b6760;
+    --text3: #a09d97;
+    --border: rgba(26,25,22,0.12);
+    --border2: rgba(26,25,22,0.06);
+    --success: #2d7a4f;
+    --success-bg: #e8f5ee;
+    --radius: 10px;
+    --shadow: 0 2px 12px rgba(26,25,22,0.08);
+  }
+
+  body {
+    font-family: 'Noto Sans JP', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 0 0 80px;
+  }
+
+  header {
+    background: var(--text);
+    color: #fff;
+    padding: 28px 24px 24px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .header-inner {
+    max-width: 640px;
+    margin: 0 auto;
+  }
+
+  .header-tag {
+    font-size: 11px;
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 0.12em;
+    color: var(--accent2);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+  }
+
+  header h1 {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    line-height: 1.3;
+    margin-bottom: 12px;
+  }
+
+  .progress-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .progress-track {
+    flex: 1;
+    height: 4px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 4px;
+    border-radius: 99px;
+    background: var(--accent2);
+    width: 0%;
+    transition: width 0.4s cubic-bezier(.4,0,.2,1);
+  }
+
+  .progress-label {
+    font-size: 12px;
+    font-family: 'DM Mono', monospace;
+    color: rgba(255,255,255,0.6);
+    white-space: nowrap;
+    min-width: 56px;
+    text-align: right;
+  }
+
+  main {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 20px 16px 0;
+  }
+
+  .section {
+    margin-bottom: 20px;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    padding: 0 4px;
+  }
+
+  .section-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    background: rgba(200,75,47,0.08);
+    border: 1px solid rgba(200,75,47,0.2);
+    border-radius: 5px;
+    padding: 2px 7px;
+    font-weight: 500;
+  }
+
+  .section-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text2);
+    letter-spacing: 0.02em;
+  }
+
+  .items {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 14px 14px 16px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s, transform 0.1s;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+  }
+
+  .item:active { transform: scale(0.985); }
+
+  .item.done {
+    background: var(--success-bg);
+    border-color: rgba(45,122,79,0.2);
+  }
+
+  .checkbox {
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    border: 1.5px solid var(--border2);
+    background: var(--surface2);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 1px;
+    transition: background 0.2s, border-color 0.2s;
+  }
+
+  .item.done .checkbox {
+    background: var(--success);
+    border-color: var(--success);
+  }
+
+  .checkmark {
+    opacity: 0;
+    transform: scale(0.5);
+    transition: opacity 0.2s, transform 0.2s;
+  }
+
+  .item.done .checkmark {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .item-body { flex: 1; min-width: 0; }
+
+  .item-label {
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.5;
+    color: var(--text);
+    transition: color 0.15s;
+  }
+
+  .item.done .item-label {
+    color: var(--success);
+    text-decoration: line-through;
+    text-decoration-color: rgba(45,122,79,0.4);
+  }
+
+  .item-note {
+    font-size: 12px;
+    color: var(--text3);
+    margin-top: 3px;
+    line-height: 1.5;
+  }
+
+  .item.done .item-note { color: rgba(45,122,79,0.5); }
+
+  .done-banner {
+    background: var(--text);
+    color: #fff;
+    border-radius: var(--radius);
+    padding: 20px;
+    text-align: center;
+    margin-top: 24px;
+    display: none;
+    animation: fadeUp 0.4s ease;
+  }
+
+  .done-banner.show { display: block; }
+
+  .done-banner .emoji { font-size: 32px; margin-bottom: 8px; }
+
+  .done-banner p {
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+
+  .done-banner span {
+    font-size: 13px;
+    color: rgba(255,255,255,0.55);
+  }
+
+  .bottom-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(245,243,238,0.92);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    padding: 12px 16px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: center;
+  }
+
+  .reset-btn {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text2);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 99px;
+    padding: 8px 24px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+
+  .reset-btn:hover { background: var(--surface2); }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="header-tag">Liberta School — 中古コース</div>
+    <h1>商品リサーチ チェックリスト</h1>
+    <div class="progress-row">
+      <div class="progress-track">
+        <div class="progress-fill" id="prog-fill"></div>
+      </div>
+      <div class="progress-label" id="prog-label">0 / 0</div>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div id="list"></div>
+  <div class="done-banner" id="done-banner">
+    <div class="emoji">🎉</div>
+    <p>全項目クリア！</p>
+    <span>リサーチ完了です。お疲れ様でした！</span>
+  </div>
+</main>
+
+<div class="bottom-bar">
+  <button class="reset-btn" onclick="reset()">リセット</button>
+</div>
+
+<script>
+const data = [
+  {
+    section: "ジャンル・カテゴリ選定",
+    num: "01",
+    items: [
+      { label: "リサーチするカテゴリを決めた", note: "例：カメラ、楽器、ブランド雑貨など" },
+      { label: "需要があるか（売れ行き）をランキングで確認した", note: "Amazon売れ筋ランキング上位を確認" },
+      { label: "自分が仕入れできる価格帯か確認した" }
+    ]
+  },
+  {
+    section: "商品選定（井上式リサーチ）",
+    num: "02",
+    items: [
+      { label: "Keepaで価格推移を確認した", note: "直近3ヶ月の最安値・最高値をチェック" },
+      { label: "FBA在庫の枯渇タイミングを確認した" },
+      { label: "季節変動・トレンドを考慮した" },
+      { label: "派生商品（色違い・サイズ違い）もリストアップした" }
+    ]
+  },
+  {
+    section: "ライバル・相場チェック",
+    num: "03",
+    items: [
+      { label: "セラー数と在庫数を確認した", note: "ライバルが多すぎないか" },
+      { label: "FBAセラーの最安値を確認した" },
+      { label: "メルカリ・ヤフオクの相場も確認した", note: "仕入れ先として参考に" }
+    ]
+  },
+  {
+    section: "利益計算",
+    num: "04",
+    items: [
+      { label: "仕入れ価格を確認した" },
+      { label: "Amazon手数料・FBA手数料を含めて計算した" },
+      { label: "利益率 15% 以上を確認した", note: "利益額・利益率の両方をチェック" },
+      { label: "送料・梱包費用も考慮した" }
+    ]
+  },
+  {
+    section: "最終確認・仕入れ判断",
+    num: "05",
+    items: [
+      { label: "規制・制限品でないことを確認した", note: "Amazonの出品制限を確認" },
+      { label: "コンディション（状態）の基準を満たしている", note: "傷・汚れ・付属品の有無" },
+      { label: "仕入れ数量を決めた" },
+      { label: "仕入れ先を確定した", note: "ハードオフ・ネット仕入れなど" }
+    ]
+  }
+];
+
+let state = [];
+data.forEach(s => s.items.forEach(() => state.push(false)));
+
+function render() {
+  const list = document.getElementById('list');
+  list.innerHTML = '';
+  let idx = 0;
+  data.forEach(sec => {
+    const sd = document.createElement('div');
+    sd.className = 'section';
+    sd.innerHTML = `<div class="section-header"><span class="section-num">${sec.num}</span><span class="section-title">${sec.section}</span></div>`;
+    const items = document.createElement('div');
+    items.className = 'items';
+    sec.items.forEach(item => {
+      const i = idx;
+      const div = document.createElement('div');
+      div.className = 'item' + (state[i] ? ' done' : '');
+      div.onclick = () => { state[i] = !state[i]; render(); };
+      div.innerHTML = `
+        <div class="checkbox">
+          <svg class="checkmark" width="13" height="10" viewBox="0 0 13 10" fill="none">
+            <path d="M1.5 5L5 8.5L11.5 1.5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="item-body">
+          <div class="item-label">${item.label}</div>
+          ${item.note ? `<div class="item-note">${item.note}</div>` : ''}
+        </div>`;
+      items.appendChild(div);
+      idx++;
+    });
+    sd.appendChild(items);
+    list.appendChild(sd);
+  });
+  updateProgress();
+}
+
+function updateProgress() {
+  const total = state.length;
+  const done = state.filter(Boolean).length;
+  document.getElementById('prog-fill').style.width = (done / total * 100) + '%';
+  document.getElementById('prog-label').textContent = `${done} / ${total}`;
+  const banner = document.getElementById('done-banner');
+  if (done === total) banner.classList.add('show');
+  else banner.classList.remove('show');
+}
+
+function reset() { state = state.map(() => false); render(); }
+
+render();
+</script>
+</body>
+</html>
